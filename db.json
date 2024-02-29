@@ -1,0 +1,12 @@
+{
+"balances":[{"name":"Sal","value":"5000","month":"Feb,2024"}],
+"bazarHistory":[{"name":"k11","cat":"c1","unit":"u1","ppu":100,"inBazar":true,"inMonth":"Feb,2024","requiredQty":1,"budget":100,"consumedBudget":100,"isFixed":false}],
+"bazarList":[],
+"cats":["c1"],
+"costs":[{"name":"k11","cat":"c1","unit":"u1","ppu":100,"inBazar":false,"inMonth":"","requiredQty":0,"budget":0,"consumedBudget":0,"isFixed":false}],
+"currentMonth":"Dec",
+"currentMonthItems":[{"name":"k11","cat":"c1","unit":"u1","ppu":100,"inBazar":false,"inMonth":"Feb,2024","requiredQty":5,"budget":500,"consumedBudget":100,"isFixed":false}],
+"isShopingStrated":"1",
+"takenBal":"0",
+"units":["u1"]
+}

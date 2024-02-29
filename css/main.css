@@ -1,0 +1,83 @@
+body{
+  font-size: 14px;
+}
+li{
+  font-size: 14px;
+}
+h1, h2, h3, h4{
+  font-size: 16px !important;
+}
+.modal-title, .accordion-header button{
+  font-size: 16px !important;
+}
+.table-wrapper {
+    height: 75vh;
+    overflow: auto;
+  }
+  tr.sticky {
+    position: sticky;
+    background-color: white;
+    top: 0;
+    z-index: 1;
+    box-shadow: 0 0 6px rgba(0,0,0,0.25);
+  }
+  .btn{
+    font-size: 12px !important;
+  }
+  select option{
+    font-size: 14px;
+  }
+  select label{
+    font-size: 13px;
+  }
+   tbody td{
+    /* padding-top: 20px; */
+  }
+   tbody td:last-child{
+    /* padding-top: 10px; */
+  }
+   table, .btn, button {
+    font-size: 12px !important;
+  }
+  .btn-sm{
+    padding: 2px 5px !important;
+  }
+  .accordion-button{
+    padding: 10px 5px !important;
+  }
+  .offcanvas-body{
+    font-size: 14px;
+  }
+  .alert{
+    font-size: 15px;
+  }
+  .bg-custom{
+    background-color: #dfd !important;
+  }
+  .remain-cash-input{
+    height: 0px !important;
+  }
+  .balances{
+    font-size: 14px;
+  }
+  .form-control:focus{
+    color: #212529;
+  background-color: rgba(89, 235, 89, 0.103) !important;
+  border-color: #ddd !important;
+  outline: 0;
+  box-shadow: 0 0 0 0!important;
+  }
+  #pills-tab button{
+    font-size: 18px !important;
+  }
+  #pills-tabContent{
+    height: 100vh !important;
+  overflow: scroll !important;
+  }
+  #pills-home{
+    height: 88vh !important;
+  overflow-y: scroll !important;
+  }
+  .fs-2{
+    font-size: 22px !important;
+  }

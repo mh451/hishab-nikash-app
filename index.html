@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/bootstrap.css" rel="stylesheet"  >
+    <link rel="stylesheet" href="css/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <title>Hishab Nikash</title>
+    
+    <script type="module">
+import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";      
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      const firebaseConfig = {
+        apiKey: "AIzaSyAftzrpBVIxud3LWjUHt4ByfLLgceFf-1k",
+        authDomain: "hishab-nikash-3101a.firebaseapp.com",
+        databaseURL: "https://hishab-nikash-3101a-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "hishab-nikash-3101a",
+        storageBucket: "hishab-nikash-3101a.appspot.com",
+        messagingSenderId: "336895117697",
+        appId: "1:336895117697:web:263c34f3344039f6120080" 
+      };
+
+      const app = initializeApp(firebaseConfig);
+      function sync(){
+        if(location.href !== 'https://mehed-hasan.github.io/JS-practice/'){
+          alert('Sorry you are not allowed to push');
+          return;
+        }
+          const database = getDatabase();
+           // Syncing data
+          set(ref(database, '/'), {
+            balances:localStorage.getItem('balances'),
+            bazarHistory:localStorage.getItem('bazarHistory'),
+            cats:localStorage.getItem('cats'),
+            costs:localStorage.getItem('costs'),
+            currentMonth:localStorage.getItem('currentMonth'),
+            currentMonthItems:localStorage.getItem('currentMonthItems'),
+            isShopingStrated:localStorage.getItem('isShopingStrated'),
+            takenBal:localStorage.getItem('takenBal'),
+            units:localStorage.getItem('units')
+          }).then(() => {
+          console.log("Data written successfully!");
+            alert("Data Synced Successfully !");
+          }).catch((error) => {
+          console.error("Error writing data: ", error);
+          });
+
+          }
+          function importData() {  
+          const database = getDatabase();
+          const dataRef = ref(database, '/'); // Reference to the root of the database
+
+          // Get the data once
+          get(dataRef).then((snapshot) => {
+            if (snapshot.exists()) {
+              const data = snapshot.val();
+              console.log(data.currentMonthItems);
+              localStorage.setItem('balances',data.balances),
+              localStorage.setItem('bazarHistory',data.bazarHistory),
+              localStorage.setItem('cats',data.cats),
+              localStorage.setItem('costs',data.costs),
+              localStorage.setItem('currentMonth',data.currentMonth),
+              localStorage.setItem('currentMonthItems',data.currentMonthItems),
+              localStorage.setItem('isShopingStrated',data.isShopingStrated),
+              localStorage.setItem('takenBal',data.takenBal),
+              localStorage.setItem('units',data.units);
+              alert("Data Imported Successfully !")
+              location.href("/");
+            } else {
+              console.log("No data available");
+            }
+          }).catch((error) => {
+            console.error("Error reading data:", error);
+          });
+    }
+          document.querySelector('.sync-btn').addEventListener('click', sync);
+          document.querySelector('.import-btn').addEventListener('click', importData);
+
+    </script>
+</head>
+<body>
+   <section>
+
+        <!-- Unit Modals  started -->
+        <div class="modal fade" id="newMonthModalAlert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModal">Are you sure ?</h1>
+              </div>
+              <div class="modal-body">
+                <p>Do you want to start <span class="monthName"></span> ?</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal" data-bs-dismiss="modal">Close</button>
+                <button data-bs-dismiss="modal" onclick="saveCurrentMonth()" type="button" class="btn btn-primary action-btn ">Yes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button style="height: 0px ; display: none; opacity: 0;"  type="button" class="btn btn-primary newMonthModal" data-bs-toggle="modal" data-bs-target="#newMonthModalAlert">
+          Launch demo modal
+        </button>
+        
+        <div class="modal fade" id="unitDeleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModal">Edit Unit</h1>
+              </div>
+              <div class="modal-body">
+                <p></p>
+                <input class="deleting-value" type="hidden" value="">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal" data-bs-dismiss="modal">Close</button>
+                <button data-bs-dismiss="modal" onclick="deleteUnit()" type="button" class="btn btn-primary action-btn ">Yes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal fade" id="unitEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModal">Want to edit <span></span> !</h1>
+              </div>
+              <div class="modal-body">
+                <input  value="" class="new-unit-name form-control" />
+                <input type="hidden"  value="" class="old-unit-name form-control" />
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal" data-bs-dismiss="modal">Close</button>
+                <button  data-bs-dismiss="modal" onclick="editUnit()" type="button" class="btn btn-primary action-btn ">Save Changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Unit Modals  ended -->
+
+
+        <!-- Cat Modals  started -->
+        <div class="modal fade" id="catDeleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModal">Edit Category</h1>
+              </div>
+              <div class="modal-body">
+                <p></p>
+                <input class="deleting-value" type="hidden" value="">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal" data-bs-dismiss="modal">Close</button>
+                <button data-bs-dismiss="modal" onclick="deleteCat()" type="button" class="btn btn-primary action-btn ">Yes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal fade" id="catEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModal">Want to delete <span></span> !</h1>
+              </div>
+              <div class="modal-body">
+                <input  value="" class="new-cat-name form-control" />
+                <input type="hidden"  value="" class="old-cat-name form-control" />
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal" data-bs-dismiss="modal">Close</button>
+                <button  data-bs-dismiss="modal" onclick="editCat()" type="button" class="btn btn-primary action-btn ">Save Changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Cat Modals  ended -->
+
+
+        <!-- Costs  Modals  started -->
+        <div class="modal fade" id="costDeleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModal">Edit Category</h1>
+              </div>
+              <div class="modal-body">
+                <p></p>
+                <input class="deleting-value" type="hidden" value="">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal" data-bs-dismiss="modal">Close</button>
+                <button data-bs-dismiss="modal" onclick="deleteCost()" type="button" class="btn btn-primary action-btn ">Yes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal fade" id="costEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModal">Want to edit <span></span> !</h1>
+              </div>
+              <div class="modal-body">
+                <input  value="" class="new-cost-name form-control" />
+                <input type="hidden"  value="" class="old-cost-name form-control" />
+                <div class="row justify-content-between mt-2">
+                  <div class="col-6">
+                    <label class="mb-1">Select Category </label>
+                    <select class="form-control edit-cat-name">
+                       <!-- Get data from js  -->
+                    </select>
+                  </div>
+                  <div class="col-6">
+                    <label class="mb-1">Select Unit</label>
+                    <select class="form-control edit-unit-name">
+                      <!-- Get data from js  -->
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal" data-bs-dismiss="modal">Close</button>
+                <button  data-bs-dismiss="modal" onclick="editCost()" type="button" class="btn btn-primary action-btn ">Save Changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Costs Cat Modals  ended -->
+
+
+                <!-- Money  Modals  started -->
+                <div class="modal fade" id="moneyDeleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-sm">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="">Edit Category</h1>
+                      </div>
+                      <div class="modal-body">
+                        <p></p>
+                        <input class="deleting-value" type="hidden" value="">
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close-modal" data-bs-dismiss="modal">Close</button>
+                        <button data-bs-dismiss="modal" onclick="deleteMoney()" type="button" class="btn btn-primary action-btn ">Yes</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="modal fade" id="moneyEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-sm">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="">Want to delete <span></span> !</h1>
+                      </div>
+                      <div class="modal-body">
+                        <input  value="" class="new-money-name form-control" />
+                        <input type="hidden"  value="" class="old-money-name form-control" />
+                        <input  value="" class="new-money-value form-control mt-2" />
+                        <input type="hidden"  value="" class="old-money-value form-control" />
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close-modal" data-bs-dismiss="modal">Close</button>
+                        <button  data-bs-dismiss="modal" onclick="editMoney()" type="button" class="btn btn-primary action-btn ">Save Changes</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Money Modals  ended -->
+
+                <!-- Add to month  Modals  started -->
+                <div class="modal fade" id="addToMonthModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-sm">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h4 class="modal-title fs-5" id="">Add "<span> </span>" to current month.</h4>
+                        
+                        <input type="hidden" class="ppu" value="">
+                      </div>
+                      <div class="modal-body">
+                        <div class="input-group mb-3">
+                          <input onkeyup="makeEstBudget()" type="number" class="form-control quantity-field" placeholder="Quantity"  aria-describedby="basic-addon2">
+                          <span class="input-group-text unit-space" id="basic-addon2"></span>
+                        </div>
+                        
+                        <label >Est Budget</label>
+                        <div class="input-group mb-3">
+                          <input  type="number" class="form-control budget-field" placeholder="Budget"  aria-describedby="basic-addon2">
+                          <span class="input-group-text  " >Tk</span>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close-modal" data-bs-dismiss="modal">Close</button>
+                        <button data-bs-dismiss="modal" onclick="addToMonth()" type="button" class="btn btn-primary action-btn btn-success">Add It</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+       
+
+                <!-- Add to month Modals  ended -->
+
+                <!-- Set unit price  Modals  started -->
+                <div class="modal fade" id="setUnitPriceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-sm">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="">Update price for 1 "<span class="unit"> </span> <span class="itemName"></span>" </h1>
+                      </div>
+                      <div class="modal-body">
+                        <input type="number" class="form-control new-PPU" value="" />
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close-modal" data-bs-dismiss="modal">Close</button>
+                        <!-- Update PPU  -->
+                        <button data-bs-dismiss="modal" onclick="updateUnitPrice()" type="button" class="btn btn-primary action-btn btn-success">Update</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+       
+
+                <!--Set unit price Modals  ended -->
+        
+
+                <!-- Remove from month   Modals  started -->
+                <div class="modal fade" id="removeFromCurrentMonth" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-sm">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="">Do you wan to remove  "<span class=""> </span> ?" </h1>
+                      </div>
+                        <input type="hidden" class="form-control old-item-name" value="" />
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close-modal" data-bs-dismiss="modal">Close</button>
+                        <!-- Update PPU  -->
+                        <button data-bs-dismiss="modal" onclick="removeFromCurrentMonth()" type="button" class="btn btn-primary action-btn btn-primary">Yes</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+       
+
+                <!--Remove from month Modals  ended -->
+    
+    <div class="offcanvas offcanvas-start w-100" data-bs-backdrop="static" tabindex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title " id="staticBackdropLabel">প্রতি মাসের হিসাব</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body">
+        <div class="card text-center">
+          <div class="card-header">
+            Featured
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between ">
+              <div>খরচঃ <span>---- </span>টাকা</div> 
+              <div>অবশিষ্টঃ <span>---- </span>টাকা</div> 
+          </div>
+
+          </div>
+          <div class="card-footer text-body-secondary">
+              <button class="btn btn-primary mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                Details
+              </button>
+            <div class="collapse" id="collapseExample">
+              <div class="card card-body">
+                Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+              <div class="tab-content mt-1 " id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
+                  <div class="alert alert-info bg-custom">
+                    <div  class=" w-100  pt-1  ">
+                        <div class="d-flex justify-content-center">
+                            <div class="date-space">---</div>
+                            <hr>
+                        </div>
+                        <div class="d-flex justify-content-between ">
+                          <div> ব্যালেন্সঃ <span id="monthly-bal"> --- </span> টাকা</div>
+    
+                            <div>সম্ভাব্য খরচঃ <span id="monthly-e-cost">--- </span> টাকা</div>
+                        </div>
+                        <div class="d-flex justify-content-between ">
+                            <div>খরচ হয়েছেঃ <span id="monthly-costed">--- </span> টাকা</div>
+                            <div>ক্যাশঃ<span id="monthly-r-balance">--- </span> টাকা</div>
+                        </div>
+                        <div class="d-flex justify-content-between ">
+                            <div>ঘাটতিঃ <span id="monthly-ghatti">--- </span> টাকা</div>
+                            <!-- <div>ক্যাশঃ<span id="monthly-r-balance">--- </span> টাকা</div> -->
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-center mt-3">
+                      <button onclick="displayDetailsReports()" class="btn btn-dark btn-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
+                        All reports
+                      </button>
+                    </div>
+                  </div>
+                  <div class="short-report"></div>
+                </div>
+                <div class="tab-pane fade  " id="pills-memo" role="tabpanel" aria-labelledby="pills-memo-tab" tabindex="0">
+                  <nav class="navbar bg-custom d-flex align-items-center justify-content-center mb-2 ">
+                      <h4><b>Monthly Cost Memo </b></h4>
+                  </nav>
+                  <div class="ps-1 pe-1">
+                    <div class="input-group flex-nowrap mb-2">
+                      <span class="input-group-text" id="addon-wrapping"><i class="bi bi-search"></i></span>
+                      <input onkeyup="search(event, getCurrentMonthItems, displayCurrentMonthList)"  type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="addon-wrapping">
+                    </div>
+                            <div class="table-wrapper">
+                              <table class="table table-sm  overflow-scroll ">
+                                  <thead class="">
+                                      <tr class="w-100 sticky">
+                                        <th class="" scope="col">Name</th>
+                                        <th class="" scope="col">Qty</th>
+                                        <th class="" scope="col">Budget</th>
+                                        <th class="" scope="col">Cost</th>
+                                        <th class="" scope="col">Balance</th>
+                                        <th class="" scope="col">Actions</th>
+  
+                                      </tr>
+                                    </thead>
+                              <tbody >
+                                  
+                              </tbody>
+                              </table>
+  
+                            </div>
+                  </div>
+                </div>
+                <div class="tab-pane fade" id="pills-items" role="tabpanel" aria-labelledby="pills-items-tab" tabindex="0">
+                  <nav class="navbar bg-custom d-flex align-items-center justify-content-center mb-2 ">
+                    <h4><b>Add Items In Current Month </b></h4>
+                  </nav>
+                  <div class="ps-1 pe-1"> 
+
+                    <div class="input-group flex-nowrap mb-2">
+                      <span class="input-group-text" id="addon-wrapping"><i class="bi bi-search"></i></span>
+                      <input onkeyup="search(event, getCostData, fetchAllItems)"  type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="addon-wrapping">
+                    </div>
+                    <div class="table-wrapper">
+                      <table  class="table table-sm  overflow-scroll ">
+                          <thead class="">
+                              <tr class="w-100 sticky">
+                                <th class="" scope="col">Name</th>
+                                <th class="" scope="col">U. Price</th>
+                                <th class="" scope="col">Actions</th>
+                              </tr>
+                            </thead>
+                        <tbody>
+                          <tr class="w-100 mt-5">
+                             
+                          </tr>
+                      </tbody>
+                      </table>
+  
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-pane fade position-relative" id="pills-bazar" role="tabpanel" aria-labelledby="pills-bazar" tabindex="0">
+                  <nav class="navbar bg-custom d-flex align-items-center justify-content-center mb-2 ">
+                    <h4><b>Track Shopping </b></h4>
+                  </nav>
+                  <div class="ps-1 pe-1">
+
+                    <div class="d-inline-flex gap-3 justify-content-between w-100 mb-2">
+                      <button onclick="startShoping()" style="right: 0; bottom: 50px;" class=" btn btn-sm btn-dark  "><i class="bi bi-cart "></i> <span class="start-shop"> Start Shoping</span></button>
+                      <div class="balances p-2">
+                       <span class="text-success r-bal"></span> / <span onblur="updatePocketBal()" class="p-1 takenBal " contenteditable="true">0</span> <sup>Taken Bal.</sup>
+                      </div>
+                    </div>
+                    <div class="input-group flex-nowrap mb-2">
+                      <span class="input-group-text" id="addon-wrapping"><i class="bi bi-search"></i></span>
+                      <input onkeyup="search(event, getCurrentBazarList, displayCurrentBazarList)"  type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="addon-wrapping">
+                    </div>
+               
+                    <div class="table-wrapper mt-2">
+                    
+                      <table  class="table table-sm  overflow-scroll ">
+                          <thead class="">
+                              <tr class="w-100 sticky">
+                                <th class="" scope="col">Name</th>
+                                <th class="" scope="col">Qty</th>
+                                <th class="" scope="col">Budget</th>
+                                <th class="" scope="col">Cost</th>
+                                <th class="" scope="col">R.Bal</th>
+                                <th class="" scope="col">Action</th>
+                              </tr>
+                            </thead>
+  
+                            <tfoot class="">
+                                <th class="" scope="col">Report:</th>
+                                <th class="" scope="col">--</th>
+                                <th class="bazar-budget" scope="col">Budget</th>
+                                <th class="bazar-cost" scope="col">Cost</th>
+                                <th class="bazar-balance" scope="col">R.Bal</th>
+                                <th class="" scope="col"><button onclick="addToBazarHistory()" class="bazar-btn btn-sm btn btn-success bi bi-check"></button></th>
+                            </tfoot>
+                      <tbody>
+                          
+                      </tbody>
+                      </table>
+  
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab" tabindex="0">
+                  
+                  <nav class="navbar bg-custom d-flex align-items-center justify-content-center mb-2 ">
+                    <h4><b>Settings </b></h4>
+                  </nav>
+                  <div class="ps-1 pe-1">
+                    <div class="accordion" id="accordionExample">
+                      <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            + Add / Edit Cost Name
+                          </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse " aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                          <div class="accordion-body">
+                            <div class="input-group flex-nowrap mb-2">
+                              <span class="input-group-text" id="addon-wrapping"><i class="bi bi-search"></i></span>
+                              <input onkeyup="search(event, getCostData, displayCostList)"  type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="addon-wrapping">
+                            </div>
+                            <ul class="list-group cost-name-list">
+                      
+   
+                            </ul>
+                            <hr>
+                            <div class="row">
+                                  <div class="col-12">
+                                    <input type="text" class="form-control cost-name" placeholder="Khoroch Item" aria-label="First name" >
+                                  </div>
+                                  <div class="row justify-content-between mt-2">
+                                    <div class="col-6">
+                                      <label class="mb-1">Select Category </label>
+                                      <select class="form-control cost-cat">
+                                         <!-- Get data from js  -->
+                                      </select>
+                                    </div>
+                                    <div class="col-6">
+                                      <label class="mb-1">Select Unit</label>
+                                      <select class="form-control cost-unit">
+                                        <!-- Get data from js  -->
+                                      </select>
+                                    </div>
+                                  </div>
+                                <div class="col mt-2">
+                                  <button onclick="addCostData()" class="btn btn-sm btn-success w-100 ">+Add New </button>
+                                </div>
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            + Add / Edit Category
+                          </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                          <div class="accordion-body">
+               
+                            <ul class="list-group cat-name-list">
+                             
+                            </ul>
+                            <hr>
+                              <div class="d-flex gap-2">
+                                <div class="col">
+                                  <input type="text" class="form-control cat-name" placeholder="Category Name" aria-label="Last name">
+                                </div>
+                              </div>
+                              <div class="col mt-2">
+                                <button onclick="addCatData()" class="btn btn-sm btn-success w-100 ">+Add New </button>
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingThree">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            + Add / Edit Unit
+  
+                          </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                          <div class="accordion-body">
+                            <ul class="list-group unit-name-list">
+                             
+                            </ul>
+                            <hr>
+                              <div class="d-flex gap-2">
+                                <div class="col">
+                                  <input type="text" class="form-control unit-name" placeholder="Unit Name" aria-label="Last name">
+                                </div>
+                              </div>
+                              <div class="col mt-2">
+                                <button onclick="addUnitData()" class="btn btn-sm btn-success w-100 ">+Add New </button>
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingFour">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="headingFour">
+                           + Add / Moneys
+  
+                          </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+                          <div class="accordion-body">
+                            <ul class="list-group money-name-list">
+                             
+                            </ul>
+                            <hr>
+                              <div class="d-flex gap-2">
+                                <div class="col">
+                                  <input type="text" class="form-control money-name" placeholder="Earning Name" aria-label="Last name">
+                                </div>
+                                <div class="col">
+                                  <input type="number" class="form-control money-value" placeholder="Balance" aria-label="Last name">
+                                </div>
+                              </div>
+                              <div class="col mt-2">
+                                <button onclick="addMoneyData()" class="btn btn-sm btn-success w-100 ">+Add Balance </button>
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="accordion-item ">
+                        <h2 class="accordion-header" id="headingFive">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="headingFive">
+                           + Start New Month
+                          </button>
+                        </h2>
+                        <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#accordionExample">
+                          <div class="accordion-body">
+                              <div class="d-flex gap-2">
+                                <div class="col">
+                                  <label>Start New Month</label>
+                                  <select onchange="openNewMonth(this)" class="form-control">
+                                    <option selected value="Jan">Jan</option>
+                                    <option value="Feb">Feb</option>
+                                    <option value="Mar">March</option>
+                                    <option value="Apr">April</option>
+                                    <option value="May">May</option>
+                                    <option value="Jun">Jun</option>
+                                    <option value="Jul">July</option>
+                                    <option value="Aug">August</option>
+                                    <option value="Sep">September</option>
+                                    <option value="Oct">October</option>
+                                    <option value="Nov">November</option>
+                                    <option value="Dec">December</option>
+                                  </select>
+                                </div>
+                              </div>
+                       
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class=" mt-5 shadow-sm">
+                        <h3 class="text-center fw-bold alert-heading">Import or Export Data</h4>
+                        <p class="text-center">Communicate with cloud</p>
+                        <div class="d-flex card flex-row justify-content-around p-4">
+                          <div class="text-center">
+                            <button  class="btn btn-dark text-white fs-2 rounded-circle sync-btn"><i class="bi bi-cloud-arrow-up-fill"></i></button>
+                            <p>Push</p>
+                          </div>
+                          <div class="text-center">
+                            <button class="btn btn-dark text-white fs-2 rounded-circle import-btn"><i class="bi bi-cloud-arrow-down-fill"></i></button>
+                            <p>Import</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+       
+          
+              
+              </div>
+         <div class="fixed-bottom w-100  bg-dark ">
+            <ul class="nav nav-pills mb-1 d-flex justify-content-between " id="pills-tab" role="tablist">
+                <li class="nav-item " role="presentation">
+                <button class="nav-link  active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true"><i class="bi bi-house"></i></button>
+                </li>
+                <li class="nav-item " role="presentation">
+                <button class="nav-link" id="pills-memo" data-bs-toggle="pill" data-bs-target="#pills-memo" type="button" role="tab" aria-controls="pills-memo" aria-selected="true"><i class="bi bi-card-list"></i></button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button onclick="lockButton()" class="nav-link" id="pills-bazar-tab" data-bs-toggle="pill" data-bs-target="#pills-bazar" type="button" role="tab"aria-controls="pills-bazar" ><i class="bi bi-shop"></i></button>
+                  </li>
+                <li class="nav-item" role="presentation">
+                <button class="nav-link" id="pills-items-tab" data-bs-toggle="pill" data-bs-target="#pills-items" type="button" role="tab" aria-controls="pills-items" aria-selected="false"><i class="bi bi-file-earmark-plus"></i></button>
+                </li> 
+
+               
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false"><i class="bi bi-gear"></i></button>
+                  </li>
+                
+            </ul>
+         </div>
+   </section>
+
+   <script src="/js/popper.js" type="text/javascript"></script>
+   <script src="/js/bootstrap.min.js" type="text/javascript" ></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(registration => {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                })
+                .catch(error => {
+                    console.error('Service Worker registration failed:', error);
+                });
+        }
+    </script>
+
+   <script src="js/translator.js" ></script>
+   <script src="js/settings/common.js" ></script>
+   <script src="js/settings/unit.js" ></script>
+   <script src="js/settings/cat.js" ></script>
+   <script src="js/settings/costName.js" ></script>
+   <script src="js/settings/addMoney.js" ></script>
+   <script src="js/allItems.js" ></script>
+   <script src="js/home.js" ></script>
+   <script src="js/bazar.js" ></script>
+   <script src="js/reports.js" ></script>
+   <script>
+      
+   </script>
+ 
+
+
+</body>
+
+</html>
