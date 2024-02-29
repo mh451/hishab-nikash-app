@@ -22,6 +22,59 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
       };
 
       const app = initializeApp(firebaseConfig);
+
+      function validationPinToSync(){
+        let pin = document.querySelector('.pinSync').value;
+        if(pin){
+          const database = getDatabase();
+        const dataRef = ref(database, '/pin');
+        get(dataRef).then((snapshot) => {
+            if (snapshot.exists()) {
+              if(pin == snapshot.val()){
+                sync();
+              }else{
+                alert("Wrong Pin !");
+                return;
+              }
+              
+            } else {
+              console.log("No data available");
+            }
+          }).catch((error) => {
+            console.error("Error reading data:", error);
+          });
+        }else{
+          alert("Pin can not be blank");
+          return;
+        }
+      }
+      function validationPinToImport(){
+        let pin = document.querySelector('.pinImport').value;
+        if(pin){
+          const database = getDatabase();
+        const dataRef = ref(database, '/pin');
+        get(dataRef).then((snapshot) => {
+            if (snapshot.exists()) {
+              if(pin == snapshot.val()){
+                importData();
+              }else{
+                alert("Wrong Pin !");
+                return;
+              }
+              
+            } else {
+              console.log("No data available");
+            }
+          }).catch((error) => {
+            console.error("Error reading data:", error);
+          });
+        }else{
+          alert("Pin can not be blank");
+          return;
+        }
+        
+      }
+
       function sync(){
         if(location.href !== 'https://mh451.github.io/hishab-nikash-app/'){
           alert('Sorry you are not allowed to push');
@@ -66,7 +119,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
               localStorage.setItem('takenBal',data.takenBal),
               localStorage.setItem('units',data.units);
               alert("Data Imported Successfully !")
-              location.href("/");
+              location.href = "./";
             } else {
               console.log("No data available");
             }
@@ -74,8 +127,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
             console.error("Error reading data:", error);
           });
     }
-          document.querySelector('.sync-btn').addEventListener('click', sync);
-          document.querySelector('.import-btn').addEventListener('click', importData);
+          document.querySelector('.sync-btn').addEventListener('click', validationPinToSync);
+          document.querySelector('.import-btn').addEventListener('click', validationPinToImport);
 
     </script>
 </head>
@@ -83,6 +136,36 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
    <section>
 
         <!-- Unit Modals  started -->
+        <div class="modal fade" id="syncModal" tabindex="-1" aria-labelledby="pinModal" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="">Please Enter Pin</h1>
+              </div>
+              <div class="modal-body">
+                <input  class="pinSync form-control" type="password" value="">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal sync-btn" data-bs-dismiss="modal">Done</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="pinModal" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="">Please Enter Pin</h1>
+              </div>
+              <div class="modal-body">
+                <input  class="pinImport form-control" type="password" value="">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal import-btn" data-bs-dismiss="modal">Done</button>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="modal fade" id="newMonthModalAlert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content">
@@ -680,11 +763,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
                         <p class="text-center">Communicate with cloud</p>
                         <div class="d-flex card flex-row justify-content-around p-4">
                           <div class="text-center">
-                            <button  class="btn btn-dark text-white fs-2 rounded-circle sync-btn"><i class="bi bi-cloud-arrow-up-fill"></i></button>
+                            <button data-bs-toggle="modal" data-bs-target="#syncModal"  class="btn btn-dark text-white fs-2 rounded-circle "><i class="bi bi-cloud-arrow-up-fill"></i></button>
                             <p>Push</p>
                           </div>
                           <div class="text-center">
-                            <button class="btn btn-dark text-white fs-2 rounded-circle import-btn"><i class="bi bi-cloud-arrow-down-fill"></i></button>
+                            <button data-bs-toggle="modal" data-bs-target="#importModal" class="btn btn-dark text-white fs-2 rounded-circle "><i class="bi bi-cloud-arrow-down-fill"></i></button>
                             <p>Import</p>
                           </div>
                         </div>
@@ -746,7 +829,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
    <script src="./js/bazar.js" ></script>
    <script src="./js/reports.js" ></script>
    <script>
-      
    </script>
  
 
