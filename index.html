@@ -725,7 +725,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js',{scope:'https://mh451.github.io/hishab-nikash-app/'})
+            navigator.serviceWorker.register('/service-worker.js',{scope:'/hishab-nikash-app/'})
                 .then(registration => {
                     console.log('Service Worker registered with scope:', registration.scope);
                 })
