@@ -5,13 +5,13 @@ const CACHE_NAME = 'my-cache-v3';
 
 // Files to cache
 const urlsToCache = [
-    '/hishab-nikash-app/',
-    '/hishab-nikash-app/js/bootstrap.min.js',
-    '/hishab-nikash-app/js/popper.js',
-    '/hishab-nikash-app/js/firebase/db.js',
-    '/hishab-nikash-app/js/firebase/firebase-app.js',
-    '/hishab-nikash-app/css/fonts/bootstrap-icons.woff',
-    '/hishab-nikash-app/css/fonts/bootstrap-icons.woff2'
+    './',
+    './js/bootstrap.min.js',
+    './popper.js',
+    './js/firebase/db.js',
+    './js/firebase/firebase-app.js',
+    './css/fonts/bootstrap-icons.woff',
+    './css/fonts/bootstrap-icons.woff2'
 ];
 
 // Install event
