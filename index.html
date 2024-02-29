@@ -82,7 +82,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
         }
           const database = getDatabase();
            // Syncing data
-          set(ref(database, '/'), {
+          set(ref(database, '/data'), {
             balances:localStorage.getItem('balances'),
             bazarHistory:localStorage.getItem('bazarHistory'),
             cats:localStorage.getItem('cats'),
@@ -102,7 +102,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
           }
           function importData() {  
           const database = getDatabase();
-          const dataRef = ref(database, '/'); // Reference to the root of the database
+          const dataRef = ref(database, '/data'); // Reference to the root of the database
 
           // Get the data once
           get(dataRef).then((snapshot) => {
