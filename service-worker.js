@@ -1,7 +1,7 @@
 // Service worker code (sw.js)
 
 // Cache name
-const CACHE_NAME = 'my-cache-v3';
+const CACHE_NAME = 'my-cache-v4';
 
 // Files to cache
 const urlsToCache = [
